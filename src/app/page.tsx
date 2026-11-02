@@ -10,7 +10,7 @@ import LoadingShell from "@/components/LoadingShell";
 import { WorkerCardSkeleton } from "@/components/Skeletons";
 import { formatPrice } from "@/lib/formatters";
 import UserAvatar from "@/components/UserAvatar";
-import { getSupabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
 
 // ============================================================
 // KAIZY HIRER HOME — Real Mapbox GL Map + Supabase Realtime
@@ -165,43 +165,63 @@ export default function HomePage() {
 
   // ── 2. REAL LIVE ONLINE WORKER COUNT (Postgres Realtime) ──
   useEffect(() => {
-    const supabase = getSupabase();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let channel: any = null;
+
+    if (!supabase) {
+      fetch('/api/workers/nearby?radius=50')
+        .then((res) => res.json())
+        .then((json) => {
+          if (json && json.success && typeof json.data?.total === 'number') {
+            setOnlineCount(json.data.total);
+          }
+        })
+        .catch(() => {});
+      return;
+    }
 
     const fetchCount = async () => {
       try {
         const { count, error } = await supabase
-          .from("worker_profiles")
-          .select("*", { count: "exact", head: true })
-          .eq("is_online", true);
+          .from('worker_profiles')
+          .select('*', { count: 'exact', head: true })
+          .eq('is_online', true);
 
         if (!error && count !== null) {
           setOnlineCount(count);
         }
       } catch (err) {
-        console.error("[online-count error]", err);
+        console.error('[online-count error]', err);
       }
     };
 
     fetchCount();
 
-    // Subscribe to realtime changes in worker_profiles
-    const channel = supabase
-      .channel("online-count")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "worker_profiles",
-        },
-        () => {
-          fetchCount();
-        }
-      )
-      .subscribe();
+    try {
+      channel = supabase
+        .channel('online-count')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'worker_profiles',
+          },
+          () => {
+            fetchCount();
+          }
+        )
+        .subscribe();
+    } catch (err) {
+      console.warn('[realtime subscription error]', err);
+    }
 
     return () => {
-      supabase.removeChannel(channel);
+      if (channel && supabase?.removeChannel) {
+        try {
+          supabase.removeChannel(channel);
+        } catch {}
+      }
     };
   }, []);
 

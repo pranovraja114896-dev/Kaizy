@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import { Epilogue, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import MobileNav from "@/components/MobileNav";
 import DesktopSidebar from "@/components/DesktopSidebar";
 import I18nProvider from "@/components/I18nProvider";
@@ -13,25 +12,6 @@ import { BookingProvider } from "@/stores/BookingStore";
 import { ToastProvider } from "@/components/ToastNotification";
 import AndroidBackHandler from "@/components/AndroidBackHandler";
 import "./globals.css";
-
-const epilogue = Epilogue({
-  variable: "--font-epilogue",
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["400", "500", "600", "700", "800", "900"],
-});
-const jakarta = Plus_Jakarta_Sans({
-  variable: "--font-jakarta",
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["400", "500", "600", "700", "800"],
-});
-const jetbrains = JetBrains_Mono({
-  variable: "--font-jetbrains",
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["400", "600"],
-});
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -86,9 +66,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <link rel="apple-touch-icon" href="/icon-192.png" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
         <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" />
       </head>
-      <body className={`${epilogue.variable} ${jakarta.variable} ${jetbrains.variable} antialiased`}
+      <body className="antialiased"
             style={{ backgroundColor: "var(--bg-app)", fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" }}>
         <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
         <AuthProvider>

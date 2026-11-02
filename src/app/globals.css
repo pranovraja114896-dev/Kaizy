@@ -24,6 +24,9 @@ html, body {
 
 /* ── WHITE / LIGHT THEME (Default) ── */
 :root, .light {
+  --font-epilogue: 'Epilogue', system-ui, -apple-system, sans-serif;
+  --font-jakarta: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-jetbrains: 'JetBrains Mono', ui-monospace, monospace;
   /* ── Brand: Saffron Energy ── */
   --brand:          #FF6B00;
   --brand-soft:     #FF9E66;
